@@ -15,10 +15,10 @@
 package word2vec
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/ynqa/wego/corpus"
 	"github.com/ynqa/wego/node"
-
-	"github.com/pkg/errors"
 )
 
 // HierarchicalSoftmax is a piece of Word2Vec optimizer.
@@ -39,14 +39,14 @@ func NewHierarchicalSoftmax(maxDepth int) *HierarchicalSoftmax {
 	}
 }
 
-func (hs *HierarchicalSoftmax) initialize(cps *corpus.Word2vecCorpus, dimension int) error {
-	nodeMap, err := cps.HuffmanTree(dimension)
+func (hs *HierarchicalSoftmax) initialize(c *corpus.WegoCorpus, dimension int) error {
+	nodeMap, err := c.HuffmanTree(dimension)
 	if err != nil {
 		return errors.Wrap(err, "Failed to initialize of *HierarchicalSoftmax")
 	}
 	hs.nodeMap = nodeMap
 	hs.dimension = dimension
-	hs.vocabulary = cps.Size()
+	hs.vocabulary = c.Size()
 	return nil
 }
 

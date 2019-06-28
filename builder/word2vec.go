@@ -26,6 +26,7 @@ import (
 // Word2vecBuilder manages the members to build Model interface.
 type Word2vecBuilder struct {
 	// common configs.
+	mode           model.Mode
 	dimension      int
 	iteration      int
 	minCount       int
@@ -49,6 +50,7 @@ type Word2vecBuilder struct {
 // NewWord2vecBuilder creates *Word2vecBuilder.
 func NewWord2vecBuilder() *Word2vecBuilder {
 	return &Word2vecBuilder{
+		mode:           config.DefaultMode,
 		dimension:      config.DefaultDimension,
 		iteration:      config.DefaultIteration,
 		minCount:       config.DefaultMinCount,
@@ -71,6 +73,17 @@ func NewWord2vecBuilder() *Word2vecBuilder {
 
 // NewWord2vecBuilderFromViper creates *Word2vecBuilder from viper.
 func NewWord2vecBuilderFromViper() (*Word2vecBuilder, error) {
+	var mode model.Mode
+	modeStr := viper.GetString(config.Mode.String())
+	switch modeStr {
+	case model.Memory.String():
+		mode = model.Memory
+	case model.External.String():
+		mode = model.External
+	default:
+		return nil, errors.Errorf("Invalid mode=%s", modeStr)
+	}
+
 	var saveVectorType model.SaveVectorType
 	saveVectorTypeStr := viper.GetString(config.SaveVectorType.String())
 	switch saveVectorTypeStr {
@@ -105,6 +118,7 @@ func NewWord2vecBuilderFromViper() (*Word2vecBuilder, error) {
 	}
 
 	return &Word2vecBuilder{
+		mode:           mode,
 		dimension:      viper.GetInt(config.Dimension.String()),
 		iteration:      viper.GetInt(config.Iteration.String()),
 		minCount:       viper.GetInt(config.MinCount.String()),
@@ -123,6 +137,11 @@ func NewWord2vecBuilderFromViper() (*Word2vecBuilder, error) {
 		subsampleThreshold: viper.GetFloat64(config.SubsampleThreshold.String()),
 		theta:              viper.GetFloat64(config.Theta.String()),
 	}, nil
+}
+
+func (wb *Word2vecBuilder) Mode(mode model.Mode) *Word2vecBuilder {
+	wb.mode = mode
+	return wb
 }
 
 // Dimension sets dimension of word vector.
@@ -227,6 +246,7 @@ func (wb *Word2vecBuilder) Build() (model.Model, error) {
 	}
 
 	o := &model.Option{
+		Mode:           wb.mode,
 		Dimension:      wb.dimension,
 		Iteration:      wb.iteration,
 		MinCount:       wb.minCount,

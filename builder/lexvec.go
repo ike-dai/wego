@@ -27,6 +27,7 @@ import (
 // LexvecBuilder manages the members to build Model interface.
 type LexvecBuilder struct {
 	// common configs.
+	mode           model.Mode
 	dimension      int
 	iteration      int
 	minCount       int
@@ -49,6 +50,7 @@ type LexvecBuilder struct {
 // NewLexvecBuilder creates *LexvecBuilder.
 func NewLexvecBuilder() *LexvecBuilder {
 	return &LexvecBuilder{
+		mode:           config.DefaultMode,
 		dimension:      config.DefaultDimension,
 		iteration:      config.DefaultIteration,
 		minCount:       config.DefaultMinCount,
@@ -70,6 +72,17 @@ func NewLexvecBuilder() *LexvecBuilder {
 
 // NewLexvecBuilderFromViper creates *LexvecBuilder from viper.
 func NewLexvecBuilderFromViper() (*LexvecBuilder, error) {
+	var mode model.Mode
+	modeStr := viper.GetString(config.Mode.String())
+	switch modeStr {
+	case model.Memory.String():
+		mode = model.Memory
+	case model.External.String():
+		mode = model.External
+	default:
+		return nil, errors.Errorf("Invalid mode=%s", modeStr)
+	}
+
 	var saveVectorType model.SaveVectorType
 	saveVectorTypeStr := viper.GetString(config.SaveVectorType.String())
 	switch saveVectorTypeStr {
@@ -95,6 +108,7 @@ func NewLexvecBuilderFromViper() (*LexvecBuilder, error) {
 	}
 
 	return &LexvecBuilder{
+		mode:           mode,
 		dimension:      viper.GetInt(config.Dimension.String()),
 		iteration:      viper.GetInt(config.Iteration.String()),
 		minCount:       viper.GetInt(config.MinCount.String()),
@@ -111,6 +125,11 @@ func NewLexvecBuilderFromViper() (*LexvecBuilder, error) {
 		smooth:             viper.GetFloat64(config.Smooth.String()),
 		relationType:       relationType,
 	}, nil
+}
+
+func (lb *LexvecBuilder) Mode(mode model.Mode) *LexvecBuilder {
+	lb.mode = mode
+	return lb
 }
 
 // Dimension sets dimension of word vector.
@@ -202,6 +221,7 @@ func (lb *LexvecBuilder) RelationType(typ corpus.RelationType) *LexvecBuilder {
 // Build creates Lexvec model.
 func (lb *LexvecBuilder) Build() (model.Model, error) {
 	o := &model.Option{
+		Mode:           lb.mode,
 		Dimension:      lb.dimension,
 		Iteration:      lb.iteration,
 		MinCount:       lb.minCount,

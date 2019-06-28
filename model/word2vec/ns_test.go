@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/ynqa/wego/corpus"
+	"github.com/ynqa/wego/model"
 )
 
 func TestNewNegativeSampling(t *testing.T) {
@@ -34,8 +35,8 @@ func TestInitialize(t *testing.T) {
 	ns := NewNegativeSampling(sampleSize)
 
 	dimension := 10
-	c := corpus.NewWord2vecCorpus()
-	c.Parse(corpus.FakeSeeker, true, 0, 0, false)
+	c := corpus.NewWegoCorpus(model.Memory)
+	c.Build(corpus.FakeSeeker, true, 0, 0, false)
 	ns.initialize(c, dimension)
 
 	expectedVectorSize := c.Size() * dimension

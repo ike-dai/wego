@@ -68,6 +68,10 @@ For more information about each sub-command, see below:
 ### Input 
 Input corpus requires the format that is divided by space between words like [text8](http://mattmahoney.net/dc/textdata.html) since wego parse with `scanner.Split(bufio.ScanWords)`.
 
+#### Huge dataset
+
+Tested using [Common Crawl](http://web-language-models.s3-website-us-east-1.amazonaws.com/wmt16/deduped/en-new.xz) from this dowload [link](http://statmt.org/wmt17/translation-task.html#Download).
+
 ###  Output
 Wego outputs a .txt file that is described word vector is subject to the following format:
 

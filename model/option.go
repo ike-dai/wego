@@ -16,6 +16,7 @@ package model
 
 // Option stores common options for each model.
 type Option struct {
+	Mode           Mode
 	Dimension      int
 	Iteration      int
 	MinCount       int

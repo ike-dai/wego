@@ -39,6 +39,8 @@ func configFlagSet() *pflag.FlagSet {
 		"input file path for corpus")
 	fs.StringP(config.OutputFile.String(), "o", config.DefaultOutputFile,
 		"output file path to save word vectors")
+	fs.StringP(config.Mode.String(), "m", config.DefaultMode.String(),
+		"train mode whether on memory or batch reading for corpus. One of memory|external")
 	fs.IntP(config.Dimension.String(), "d", config.DefaultDimension,
 		"dimension of word vector")
 	fs.Int(config.Iteration.String(), config.DefaultIteration,
@@ -67,6 +69,7 @@ func configFlagSet() *pflag.FlagSet {
 func bindConfig(cmd *cobra.Command) {
 	viper.BindPFlag(config.InputFile.String(), cmd.Flags().Lookup(config.InputFile.String()))
 	viper.BindPFlag(config.OutputFile.String(), cmd.Flags().Lookup(config.OutputFile.String()))
+	viper.BindPFlag(config.Mode.String(), cmd.Flags().Lookup(config.Mode.String()))
 	viper.BindPFlag(config.Dimension.String(), cmd.Flags().Lookup(config.Dimension.String()))
 	viper.BindPFlag(config.Iteration.String(), cmd.Flags().Lookup(config.Iteration.String()))
 	viper.BindPFlag(config.MinCount.String(), cmd.Flags().Lookup(config.MinCount.String()))

@@ -44,7 +44,7 @@ type Word2vecOption struct {
 type Word2vec struct {
 	*model.Option
 	*Word2vecOption
-	*corpus.Word2vecCorpus
+	*corpus.WegoCorpus
 
 	subSamples []float64
 
@@ -55,9 +55,6 @@ type Word2vec struct {
 	currentlr        float64
 	trained          chan struct{}
 	trainedWordCount int
-
-	// manage data range per thread.
-	indexPerThread []int
 
 	// progress bar.
 	progress *pb.ProgressBar
@@ -76,35 +73,55 @@ func NewWord2vec(option *model.Option, word2vecOption *Word2vecOption) *Word2vec
 
 func (w *Word2vec) initialize() error {
 	// Store subsumple before training.
-	w.subSamples = make([]float64, w.Word2vecCorpus.Size())
-	for i := 0; i < w.Word2vecCorpus.Size(); i++ {
-		z := float64(w.Word2vecCorpus.IDFreq(i)) / float64(w.Word2vecCorpus.TotalFreq())
+	w.subSamples = make([]float64, w.Size())
+	for i := 0; i < w.Size(); i++ {
+		z := float64(w.IDFreq(i)) / float64(w.TotalFreq())
 		w.subSamples[i] = (math.Sqrt(z/w.SubsampleThreshold) + 1.0) *
 			w.SubsampleThreshold / z
 	}
 
 	// Initialize word vector.
-	vectorSize := w.Word2vecCorpus.Size() * w.Dimension
+	vectorSize := w.Size() * w.Dimension
 	w.vector = make([]float64, vectorSize)
 	for i := 0; i < vectorSize; i++ {
 		w.vector[i] = (rand.Float64() - 0.5) / float64(w.Dimension)
 	}
 
 	// Initialize optimizer.
-	return w.Opt.initialize(w.Word2vecCorpus, w.Dimension)
+	return w.Opt.initialize(w.WegoCorpus, w.Dimension)
 }
 
 // Train trains words' vector on corpus.
 func (w *Word2vec) Train(f io.Reader) error {
-	c := corpus.NewWord2vecCorpus()
-	if err := c.Parse(f, w.ToLower, w.MinCount, w.BatchSize, w.Verbose); err != nil {
+	c := corpus.NewWegoCorpus(w.Mode)
+	if err := c.Build(f, w.ToLower, w.MinCount, w.BatchSize, w.Verbose); err != nil {
 		return errors.Wrap(err, "Failed to parse corpus")
 	}
-	w.Word2vecCorpus = c
+	w.WegoCorpus = c
 	if err := w.initialize(); err != nil {
 		return errors.Wrap(err, "Failed to initialize")
 	}
-	return w.train()
+
+	switch w.Mode {
+	case model.Memory:
+		return w.train()
+	case model.External:
+		return w.trainBatch()
+	default:
+		return errors.Errorf("Invalid mode=%s", w.Mode)
+	}
+}
+
+func (w *Word2vec) trainBatch() error {
+	for i := 1; i <= w.Iteration; i++ {
+		if w.Verbose {
+			fmt.Printf("Train %d-th:\n", i)
+			w.progress = pb.New(w.TotalFreq()).SetWidth(80)
+			w.progress.Start()
+		}
+		go w.observeLearningRate()
+	}
+	return nil
 }
 
 func (w *Word2vec) train() error {
@@ -114,7 +131,7 @@ func (w *Word2vec) train() error {
 		return errors.New("No words for training")
 	}
 
-	w.indexPerThread = model.IndexPerThread(w.ThreadSize, documentSize)
+	indexPerThread := model.IndexPerThread(w.ThreadSize, documentSize)
 
 	for i := 1; i <= w.Iteration; i++ {
 		if w.Verbose {
@@ -129,7 +146,7 @@ func (w *Word2vec) train() error {
 
 		for j := 0; j < w.ThreadSize; j++ {
 			waitGroup.Add(1)
-			go w.trainPerThread(document[w.indexPerThread[j]:w.indexPerThread[j+1]], w.Mod.trainOne,
+			go w.trainPerThread(document[indexPerThread[j]:indexPerThread[j+1]], w.Mod.trainOne,
 				semaphore, waitGroup)
 		}
 		waitGroup.Wait()

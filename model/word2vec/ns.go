@@ -37,8 +37,8 @@ func NewNegativeSampling(sampleSize int) *NegativeSampling {
 	}
 }
 
-func (ns *NegativeSampling) initialize(cps *corpus.Word2vecCorpus, dimension int) error {
-	ns.vocabulary = cps.Size()
+func (ns *NegativeSampling) initialize(c *corpus.WegoCorpus, dimension int) error {
+	ns.vocabulary = c.Size()
 	ns.dimension = dimension
 	ns.ContextVector = make([]float64, ns.vocabulary*ns.dimension)
 	return nil

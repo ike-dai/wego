@@ -30,6 +30,7 @@ type Config int
 const (
 	InputFile Config = iota
 	OutputFile
+	Mode
 	Dimension
 	Iteration
 	MinCount
@@ -63,6 +64,7 @@ const (
 var (
 	DefaultInputFile      string               = "example/input.txt"
 	DefaultOutputFile     string               = "example/word_vectors.txt"
+	DefaultMode           model.Mode           = model.Memory
 	DefaultDimension      int                  = 10
 	DefaultIteration      int                  = 15
 	DefaultMinCount       int                  = 5
@@ -98,6 +100,8 @@ func (c Config) String() string {
 		return "inputFile"
 	case OutputFile:
 		return "outputFile"
+	case Mode:
+		return "mode"
 	case Dimension:
 		return "dimension"
 	case Iteration:

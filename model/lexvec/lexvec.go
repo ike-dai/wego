@@ -46,7 +46,7 @@ type LexvecOption struct {
 type Lexvec struct {
 	*model.Option
 	*LexvecOption
-	*corpus.CountModelCorpus
+	*corpus.WegoCorpus
 
 	subSamples []float64
 
@@ -60,9 +60,6 @@ type Lexvec struct {
 	currentlr        float64
 	trained          chan struct{}
 	trainedWordCount int
-
-	// data size per thread.
-	indexPerThread []int
 
 	// progress bar.
 	progress *pb.ProgressBar
@@ -81,11 +78,11 @@ func NewLexvec(option *model.Option, lexvecOption *LexvecOption) *Lexvec {
 
 func (l *Lexvec) initialize() (err error) {
 	// Build pairs based on co-occurrence.
-	l.pairs, err = l.CountModelCorpus.PairsIntoLexvec(l.Window, l.RelationType, l.Smooth, l.Verbose)
+	l.pairs, err = l.PairsIntoLexvec(l.Mode, l.Window, l.RelationType, l.Smooth, l.Verbose)
 
 	// Store subsample before training.
-	l.subSamples = make([]float64, l.Corpus.Size())
-	for i := 0; i < l.Corpus.Size(); i++ {
+	l.subSamples = make([]float64, l.Size())
+	for i := 0; i < l.Size(); i++ {
 		z := 1. - math.Sqrt(l.SubSampleThreshold/float64(l.IDFreq(i)))
 		if z < 0 {
 			z = 0
@@ -94,7 +91,7 @@ func (l *Lexvec) initialize() (err error) {
 	}
 
 	// Initialize word vector.
-	vectorSize := l.Corpus.Size() * l.Dimension * 2
+	vectorSize := l.Size() * l.Dimension * 2
 	l.vector = make([]float64, vectorSize)
 	for i := 0; i < vectorSize; i++ {
 		l.vector[i] = (rand.Float64() - 0.5) / float64(l.Dimension)
@@ -104,11 +101,11 @@ func (l *Lexvec) initialize() (err error) {
 
 // Train trains words' vector on corpus.
 func (l *Lexvec) Train(f io.Reader) error {
-	c := corpus.NewCountModelCorpus()
-	if err := c.Parse(f, l.ToLower, l.MinCount, l.BatchSize, l.Verbose); err != nil {
+	c := corpus.NewWegoCorpus(l.Mode)
+	if err := c.Build(f, l.ToLower, l.MinCount, l.BatchSize, l.Verbose); err != nil {
 		return errors.Wrap(err, "Failed to parse corpus")
 	}
-	l.CountModelCorpus = c
+	l.WegoCorpus = c
 	if err := l.initialize(); err != nil {
 		return errors.Wrap(err, "Failed to initialize")
 	}
@@ -122,7 +119,7 @@ func (l *Lexvec) train() error {
 		return errors.New("No words for training")
 	}
 
-	l.indexPerThread = model.IndexPerThread(l.ThreadSize, documentSize)
+	indexPerThread := model.IndexPerThread(l.ThreadSize, documentSize)
 
 	for i := 1; i <= l.Iteration; i++ {
 		if l.Verbose {
@@ -137,7 +134,7 @@ func (l *Lexvec) train() error {
 
 		for j := 0; j < l.ThreadSize; j++ {
 			waitGroup.Add(1)
-			go l.trainPerThread(document[l.indexPerThread[j]:l.indexPerThread[j+1]], semaphore, waitGroup)
+			go l.trainPerThread(document[indexPerThread[j]:indexPerThread[j+1]], semaphore, waitGroup)
 		}
 
 		waitGroup.Wait()
@@ -187,9 +184,9 @@ func (l *Lexvec) scan(document []int, wordIndex int, wordVector []float64, lr fl
 		encoded := co.EncodeBigram(uint64(word), uint64(context))
 		l.trainOne(l1, l2, l.pairs[encoded])
 		for n := 0; n < l.NegativeSampleSize; n++ {
-			sample := model.NextRandom(l.CountModelCorpus.Size())
+			sample := model.NextRandom(l.Size())
 			encoded := co.EncodeBigram(uint64(word), uint64(sample))
-			l2 := (sample + l.CountModelCorpus.Size()) * l.Dimension
+			l2 := (sample + l.Size()) * l.Dimension
 			l.trainOne(l1, l2, l.pairs[encoded])
 		}
 	}
@@ -215,7 +212,7 @@ func (l *Lexvec) observeLearningRate(iteration int) {
 		if l.trainedWordCount%l.BatchSize == 0 {
 			l.currentlr = l.Initlr *
 				(1. - float64(l.trainedWordCount)/
-					(float64(l.Corpus.TotalFreq())-float64(iteration)))
+					(float64(l.TotalFreq())-float64(iteration)))
 			if l.currentlr < l.Initlr*l.Theta {
 				l.currentlr = l.Initlr * l.Theta
 			}
@@ -247,7 +244,7 @@ func (l *Lexvec) Save(outputPath string) error {
 		file.Close()
 	}()
 
-	wordSize := l.CountModelCorpus.Size()
+	wordSize := l.Size()
 	if l.Verbose {
 		fmt.Println("Save:")
 		l.progress = pb.New(wordSize).SetWidth(80)
@@ -257,7 +254,7 @@ func (l *Lexvec) Save(outputPath string) error {
 
 	var buf bytes.Buffer
 	for i := 0; i < wordSize; i++ {
-		word, _ := l.CountModelCorpus.Word(i)
+		word, _ := l.Word(i)
 		fmt.Fprintf(&buf, "%v ", word)
 		for j := 0; j < l.Dimension; j++ {
 			l1 := i*l.Dimension + j

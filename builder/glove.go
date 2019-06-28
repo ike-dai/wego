@@ -26,6 +26,7 @@ import (
 // GloveBuilder manages the members to build Model interface.
 type GloveBuilder struct {
 	// common configs.
+	mode           model.Mode
 	dimension      int
 	iteration      int
 	minCount       int
@@ -46,6 +47,7 @@ type GloveBuilder struct {
 // NewGloveBuilder creates *GloveBuilder
 func NewGloveBuilder() *GloveBuilder {
 	return &GloveBuilder{
+		mode:           config.DefaultMode,
 		dimension:      config.DefaultDimension,
 		iteration:      config.DefaultIteration,
 		minCount:       config.DefaultMinCount,
@@ -65,6 +67,17 @@ func NewGloveBuilder() *GloveBuilder {
 
 // NewGloveBuilderFromViper creates *GloveBuilder from viper.
 func NewGloveBuilderFromViper() (*GloveBuilder, error) {
+	var mode model.Mode
+	modeStr := viper.GetString(config.Mode.String())
+	switch modeStr {
+	case model.Memory.String():
+		mode = model.Memory
+	case model.External.String():
+		mode = model.External
+	default:
+		return nil, errors.Errorf("Invalid mode=%s", modeStr)
+	}
+
 	var saveVectorType model.SaveVectorType
 	saveVectorTypeStr := viper.GetString(config.SaveVectorType.String())
 	switch saveVectorTypeStr {
@@ -87,6 +100,7 @@ func NewGloveBuilderFromViper() (*GloveBuilder, error) {
 		return nil, errors.Errorf("Invalid solver type=%s", solverTypeStr)
 	}
 	return &GloveBuilder{
+		mode:           mode,
 		dimension:      viper.GetInt(config.Dimension.String()),
 		iteration:      viper.GetInt(config.Iteration.String()),
 		minCount:       viper.GetInt(config.MinCount.String()),
@@ -102,6 +116,11 @@ func NewGloveBuilderFromViper() (*GloveBuilder, error) {
 		xmax:   viper.GetInt(config.Xmax.String()),
 		alpha:  viper.GetFloat64(config.Alpha.String()),
 	}, nil
+}
+
+func (gb *GloveBuilder) Mode(mode model.Mode) *GloveBuilder {
+	gb.mode = mode
+	return gb
 }
 
 // Dimension sets dimension of word vector.
@@ -184,6 +203,7 @@ func (gb *GloveBuilder) Alpha(alpha float64) *GloveBuilder {
 // Build creates model.Model interface.
 func (gb *GloveBuilder) Build() (model.Model, error) {
 	o := &model.Option{
+		Mode:           gb.mode,
 		Dimension:      gb.dimension,
 		Iteration:      gb.iteration,
 		MinCount:       gb.minCount,

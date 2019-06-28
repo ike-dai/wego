@@ -24,6 +24,25 @@ type Model interface {
 	Save(outputFile string) error
 }
 
+// Mode is a list of types to train for corpus on memory or batch reading (external).
+type Mode int
+
+const (
+	Memory Mode = iota
+	External
+)
+
+func (m Mode) String() string {
+	switch m {
+	case Memory:
+		return "memory"
+	case External:
+		return "external"
+	default:
+		return "unknown"
+	}
+}
+
 // SaveVectorType is a list of types to save model.
 type SaveVectorType int
 
