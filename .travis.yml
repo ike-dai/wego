@@ -29,6 +29,6 @@ after_script: |
   if [[ $TRAVIS_GO_VERSION == 1.11* ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
     goveralls -repotoken ${COVERALLS_TOKEN}
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    docker build -t ynqa/wego:latest .
-    docker push ynqa/wego:latest
+    docker build -t ike-dai/wego:latest .
+    docker push ike-dai/wego:latest
   fi

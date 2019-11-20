@@ -17,8 +17,8 @@ package main
 import (
 	"os"
 
-	"github.com/ynqa/wego/builder"
-	"github.com/ynqa/wego/corpus"
+	"github.com/ike-dai/wego/builder"
+	"github.com/ike-dai/wego/corpus"
 )
 
 func main() {

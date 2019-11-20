@@ -18,10 +18,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/ynqa/wego/config"
-	"github.com/ynqa/wego/corpus"
-	"github.com/ynqa/wego/model"
-	"github.com/ynqa/wego/model/lexvec"
+	"github.com/ike-dai/wego/config"
+	"github.com/ike-dai/wego/corpus"
+	"github.com/ike-dai/wego/model"
+	"github.com/ike-dai/wego/model/lexvec"
 )
 
 // LexvecBuilder manages the members to build Model interface.

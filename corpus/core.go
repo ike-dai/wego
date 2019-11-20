@@ -23,7 +23,7 @@ import (
 	"github.com/chewxy/lingo/corpus"
 	"github.com/pkg/errors"
 
-	"github.com/ynqa/wego/timer"
+	"github.com/ike-dai/wego/timer"
 )
 
 type core struct {

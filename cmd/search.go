@@ -21,8 +21,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ynqa/wego/config"
-	"github.com/ynqa/wego/search"
+	"github.com/ike-dai/wego/config"
+	"github.com/ike-dai/wego/search"
 )
 
 var searchCmd = &cobra.Command{

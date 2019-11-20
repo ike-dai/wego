@@ -15,7 +15,7 @@
 package builder
 
 import (
-	"github.com/ynqa/wego/model/word2vec"
+	"github.com/ike-dai/wego/model/word2vec"
 	"testing"
 )
 

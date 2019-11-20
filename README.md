@@ -1,8 +1,8 @@
 # Word Embedding in Go
 
-[![Build Status](https://travis-ci.org/ynqa/wego.svg?branch=master)](https://travis-ci.org/ynqa/wego)
-[![GoDoc](https://godoc.org/github.com/ynqa/wego?status.svg)](https://godoc.org/github.com/ynqa/wego)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ynqa/wego)](https://goreportcard.com/report/github.com/ynqa/wego)
+[![Build Status](https://travis-ci.org/ike-dai/wego.svg?branch=master)](https://travis-ci.org/ike-dai/wego)
+[![GoDoc](https://godoc.org/github.com/ike-dai/wego?status.svg)](https://godoc.org/github.com/ike-dai/wego)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ike-dai/wego)](https://goreportcard.com/report/github.com/ike-dai/wego)
 
 Wego is the implementations for word embedding (a.k.a word representation) models in Go. [Word embedding](https://en.wikipedia.org/wiki/Word_embedding) makes word's meaning, structure, and concept mapping into vector space with low dimension.  For representative instance:
 
@@ -29,7 +29,7 @@ Wego provides CLI that includes not only training model for embedding but also s
 ## Installation
 
 ```
-$ go get -u github.com/ynqa/wego
+$ go get -u github.com/ike-dai/wego
 $ bin/wego -h
 ```
 
@@ -85,8 +85,8 @@ package main
 import (
 	"os"
 
-	"github.com/ynqa/wego/builder"
-	"github.com/ynqa/wego/model/word2vec"
+	"github.com/ike-dai/wego/builder"
+	"github.com/ike-dai/wego/model/word2vec"
 )
 
 func main() {

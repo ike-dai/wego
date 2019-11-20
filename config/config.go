@@ -17,10 +17,10 @@ package config
 import (
 	"runtime"
 
-	"github.com/ynqa/wego/corpus"
-	"github.com/ynqa/wego/model"
-	"github.com/ynqa/wego/model/glove"
-	"github.com/ynqa/wego/model/word2vec"
+	"github.com/ike-dai/wego/corpus"
+	"github.com/ike-dai/wego/model"
+	"github.com/ike-dai/wego/model/glove"
+	"github.com/ike-dai/wego/model/word2vec"
 )
 
 // Config is enum of the common config.

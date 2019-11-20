@@ -17,8 +17,8 @@ package main
 import (
 	"os"
 
-	"github.com/ynqa/wego/builder"
-	"github.com/ynqa/wego/model/word2vec"
+	"github.com/ike-dai/wego/builder"
+	"github.com/ike-dai/wego/model/word2vec"
 )
 
 func main() {

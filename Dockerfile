@@ -8,13 +8,13 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
 
-WORKDIR /go/src/github.com/ynqa/wego
+WORKDIR /go/src/github.com/ike-dai/wego
 COPY . .
 RUN dep ensure -v -vendor-only
 RUN go build -v -o wego .
 
 FROM busybox
-COPY --from=builder /go/src/github.com/ynqa/wego/wego /usr/local/bin/wego
+COPY --from=builder /go/src/github.com/ike-dai/wego/wego /usr/local/bin/wego
 
 ENTRYPOINT ["wego"]
 CMD ["help"]

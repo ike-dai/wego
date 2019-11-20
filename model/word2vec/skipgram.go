@@ -15,7 +15,7 @@
 package word2vec
 
 import (
-	"github.com/ynqa/wego/model"
+	"github.com/ike-dai/wego/model"
 )
 
 // SkipGram behaviors as one of Word2vec solver.

@@ -17,7 +17,7 @@ package main
 import (
 	"os"
 
-	"github.com/ynqa/wego/cmd"
+	"github.com/ike-dai/wego/cmd"
 )
 
 func main() {

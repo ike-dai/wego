@@ -15,8 +15,8 @@
 package word2vec
 
 import (
-	"github.com/ynqa/wego/corpus"
-	"github.com/ynqa/wego/node"
+	"github.com/ike-dai/wego/corpus"
+	"github.com/ike-dai/wego/node"
 
 	"github.com/pkg/errors"
 )

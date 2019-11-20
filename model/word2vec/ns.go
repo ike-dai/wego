@@ -15,8 +15,8 @@
 package word2vec
 
 import (
-	"github.com/ynqa/wego/corpus"
-	"github.com/ynqa/wego/model"
+	"github.com/ike-dai/wego/corpus"
+	"github.com/ike-dai/wego/model"
 )
 
 // NegativeSampling is a piece of Word2Vec optimizer.

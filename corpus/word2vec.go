@@ -15,7 +15,7 @@
 package corpus
 
 import (
-	"github.com/ynqa/wego/node"
+	"github.com/ike-dai/wego/node"
 )
 
 // Word2vecCorpus stores corpus.

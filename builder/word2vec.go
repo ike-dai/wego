@@ -18,9 +18,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/ynqa/wego/config"
-	"github.com/ynqa/wego/model"
-	"github.com/ynqa/wego/model/word2vec"
+	"github.com/ike-dai/wego/config"
+	"github.com/ike-dai/wego/model"
+	"github.com/ike-dai/wego/model/word2vec"
 )
 
 // Word2vecBuilder manages the members to build Model interface.

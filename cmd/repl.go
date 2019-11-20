@@ -20,8 +20,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ynqa/wego/config"
-	"github.com/ynqa/wego/repl"
+	"github.com/ike-dai/wego/config"
+	"github.com/ike-dai/wego/repl"
 )
 
 var replCmd = &cobra.Command{

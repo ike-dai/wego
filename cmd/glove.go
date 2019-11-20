@@ -22,9 +22,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ynqa/wego/builder"
-	"github.com/ynqa/wego/config"
-	"github.com/ynqa/wego/validate"
+	"github.com/ike-dai/wego/builder"
+	"github.com/ike-dai/wego/config"
+	"github.com/ike-dai/wego/validate"
 )
 
 var gloveCmd = &cobra.Command{

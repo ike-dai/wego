@@ -17,7 +17,7 @@ package builder
 import (
 	"testing"
 
-	"github.com/ynqa/wego/model/glove"
+	"github.com/ike-dai/wego/model/glove"
 )
 
 func TestGloveDimension(t *testing.T) {

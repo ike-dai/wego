@@ -24,7 +24,7 @@ import (
 	"github.com/peterh/liner"
 	"github.com/pkg/errors"
 
-	"github.com/ynqa/wego/search"
+	"github.com/ike-dai/wego/search"
 )
 
 type Repl struct {

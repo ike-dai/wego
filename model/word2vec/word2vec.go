@@ -29,8 +29,8 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/cheggaaa/pb.v1"
 
-	"github.com/ynqa/wego/corpus"
-	"github.com/ynqa/wego/model"
+	"github.com/ike-dai/wego/corpus"
+	"github.com/ike-dai/wego/model"
 )
 
 type Word2vecOption struct {
