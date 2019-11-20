@@ -22,6 +22,7 @@ import (
 type Model interface {
 	Train(f io.Reader) error
 	Save(outputFile string) error
+	Get() (map[string][]float64, error)
 }
 
 // SaveVectorType is a list of types to save model.

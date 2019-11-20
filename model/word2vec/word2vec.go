@@ -241,3 +241,32 @@ func (w *Word2vec) Save(outputPath string) error {
 	wr.WriteString(fmt.Sprintf("%v", buf.String()))
 	return nil
 }
+
+// Get gets the word vector.
+func (w *Word2vec) Get() (map[string][]float64, error) {
+	wordSize := w.Size()
+	var contextVector []float64
+	switch opt := w.Opt.(type) {
+	case *NegativeSampling:
+		contextVector = opt.ContextVector
+	}
+	wordVector := make(map[string][]float64)
+
+	for i := 0; i < wordSize; i++ {
+		word, _ := w.Word(i)
+		for j := 0; j < w.Dimension; j++ {
+			var v float64
+			l := i*w.Dimension + j
+			switch {
+			case w.SaveVectorType == model.ADD && len(contextVector) != 0:
+				v = w.vector[l] + contextVector[l]
+			case w.SaveVectorType == model.NORMAL:
+				v = w.vector[l]
+			default:
+				return nil, errors.Errorf("Invalid case to get vector type=%s", w.SaveVectorType)
+			}
+			wordVector[word] = append(wordVector[word], v)
+		}
+	}
+	return wordVector, nil
+}

@@ -220,3 +220,7 @@ func (g *Glove) Save(outputPath string) error {
 	w.WriteString(fmt.Sprintf("%v", buf.String()))
 	return nil
 }
+func (g *Glove) Get() (map[string][]float64, error) {
+	return nil, nil
+}
+
